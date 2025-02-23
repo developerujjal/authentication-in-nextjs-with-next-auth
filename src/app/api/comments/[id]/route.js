@@ -25,6 +25,17 @@ export async function PATCH(request, { params }) {
 }
 
 
+export async function DELETE(request, { params }) {
+
+    const { id } = await params;
+    const newCommens = comments.filter(c => c.id !== parseInt(id));
+    return Response.json({
+        newCommens
+    })
+
+}
+
+
 
 const comments = [
     {
