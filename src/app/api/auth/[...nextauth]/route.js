@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 const handler = NextAuth({
+    secret: process.env.NEXTAUTH_SECRET,
     session: {
         strategy: "jwt"
     },
@@ -26,23 +27,49 @@ const handler = NextAuth({
                 // You can also use the `req` object to obtain additional parameters
                 // (i.e., the request IP address)
                 console.log('CRE: ', credentials)
-                const res = await fetch("/your/endpoint", {
-                    method: 'POST',
-                    body: JSON.stringify(credentials),
-                    headers: { "Content-Type": "application/json" }
-                })
-                const user = await res.json()
 
-                // If no error and we have user data, return it
-                if (res.ok && user) {
-                    return user
+                /*  const res = await fetch("/your/endpoint", {
+                     method: 'POST',
+                     body: JSON.stringify(credentials),
+                     headers: { "Content-Type": "application/json" }
+                 })
+                 const user = await res.json()
+ 
+                 // If no error and we have user data, return it
+                 if (res.ok && user) {
+                     return user
+                 }
+                 // Return null if user data could not be retrieved
+                 return null */
+
+                const { email, password } = credentials;
+
+                if (email) {
+                    const currentUser = users.find(u => u?.email === email)
+                    if (currentUser) {
+                        if (currentUser?.password === password) {
+                            return currentUser;
+                        } else {
+                            return null
+                        }
+                    }
                 }
-                // Return null if user data could not be retrieved
-                return null
+
+                if (!credentials) {
+                    return null;
+                } else {
+                    return true;
+                }
+
+
             }
         })
     ]
 })
+
+const users = [
+    { email: 'm@gmail.com', password: 'password' }
+]
 
 
 export { handler as GET, handler as POST };
